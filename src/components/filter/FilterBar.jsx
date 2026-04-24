@@ -7,7 +7,6 @@ const FilterContainer = styled.div`
   display: flex;
   gap: 14px;
   margin-left: 158px;
-  margin-top: 77px;
 `;
 
 const filterOptions = {

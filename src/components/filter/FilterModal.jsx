@@ -42,7 +42,6 @@ const CloseButton = styled.button`
   background: transparent;
   padding: 0;
   cursor: pointer;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -89,7 +88,7 @@ export default function FilterModal({ title, rows, width, onClose }) {
         <TopRow>
           <Title>{title}</Title>
           <CloseButton onClick={onClose}>
-            <CloseIcon src={closeIcon} alt="닫기" />
+            <CloseIcon src={closeIcon} />
           </CloseButton>
         </TopRow>
 

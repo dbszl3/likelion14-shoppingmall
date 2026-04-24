@@ -16,9 +16,7 @@ const Button = styled.button`
 
 function FilterButton({ name, wide, onClick }) {
   return (
-    <Button $wide={wide} onClick={onClick}>
-      {name}<img src={vector} alt="필터 열기" />
-    </Button>
+    <Button $wide={wide} onClick={onClick}>{name}<img src={vector} /></Button>
   );
 }
 
