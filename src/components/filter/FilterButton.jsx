@@ -2,7 +2,7 @@ import styled from "styled-components";
 import vector from "../../assets/icons/Vector.png";
 
 const Button = styled.button`
-    width: ${(props) => (props.wide ? "72px" : "58px")};
+    width: ${(props) => (props.$wide ? "72px" : "58px")};
     height: 33px;
     border-radius: 20px;
     border: none;
@@ -14,9 +14,12 @@ const Button = styled.button`
     gap: 5px;
 `;
 
-function FilterButton({ name, wide }) {
+function FilterButton({ name, wide, onClick }) {
   return (
-    <Button wide={wide}>{name}<img src={vector} alt="arrow" /></Button>
+    <Button $wide={wide} onClick={onClick}>
+      {name}<img src={vector} alt="필터 열기" />
+    </Button>
   );
 }
+
 export default FilterButton;
