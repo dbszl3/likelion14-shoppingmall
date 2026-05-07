@@ -34,9 +34,8 @@ const SortIcon = styled.img`
   display: block;
 `;
 
-export default function SortButton() {
+export default function SortButton({ selectedSort, onSelect }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState("기본 정렬순");
 
   return (
     <SortWrapper>
@@ -45,13 +44,7 @@ export default function SortButton() {
       </FilterContainer>
 
       {isOpen && (
-        <SortModal
-          selectedSort={selectedSort}
-          onSelect={(option) => {
-            setSelectedSort(option);
-            setIsOpen(false);
-          }}
-        />
+        <SortModal selectedSort={selectedSort} onSelect={(option) => { onSelect(option); setIsOpen(false); }} />
       )}
     </SortWrapper>
   );

@@ -1,13 +1,15 @@
+import { useEffect, useState } from "react";
 import FilterBar from "../../components/filter/FilterBar";
 import SortButton from "../../components/sort/SortButton";
 import ProductCard from "../../components/product/ProductCard";
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
+import productDummy from "./productDummy";
 
-import product1 from "../../assets/images/product1.png";
-import product2 from "../../assets/images/product2.png";
-import product3 from "../../assets/images/product3.png";
-import product4 from "../../assets/images/product4.png";
-import product5 from "../../assets/images/product5.png";
+const displayProducts = [...productDummy, ...productDummy].map((item, index) => ({
+  ...item,
+  id: index + 1,
+}));
 
 const MainContainer = styled.div`
   display: flex;
@@ -29,52 +31,39 @@ const ProductRow = styled.div`
 `;
 
 export default function Main() {
-  const products = [
-    {
-      imageUrl: product1,
-      name: "아이앱 스튜디오 25 후드 라이트 그레이",
-      price: 145000,
-      reviewCount: 1561,
-    },
-    {
-      imageUrl: product2,
-      name: "아이앱 스튜디오 25 후드 라이트 블루",
-      price: 145000,
-      reviewCount: 1732,
-    },
-    {
-      imageUrl: product3,
-      name: "아디다스 블랙 저지 2016",
-      price: 255000,
-      reviewCount: 781,
-    },
-    {
-      imageUrl: product4,
-      name: "슈프림 후드집업 30 딥블루",
-      price: 458000,
-      reviewCount: 2567,
-    },
-    {
-      imageUrl: product5,
-      name: "나이키 에어 그레이 하운드 25",
-      price: 235000,
-      reviewCount: 231,
-    },
-  ];
+  const location = useLocation();
+  const [filter, setFilter] = useState({ name: "", value: "" });
+  const [selectedSort, setSelectedSort] = useState("기본 정렬순");
+  useEffect(() => { setFilter({ name: "", value: "" }); setSelectedSort("기본 정렬순"); }, [location.state?.resetFilter]);
+  const handleFilterChange = (name, value) => setFilter((prev) => (prev.name === name && prev.value === value ? { name: "", value: "" } : { name, value }));
+  const sortedProducts = displayProducts.filter((item) => {
+    if (!filter.value) return true;
+    if (filter.name === "성별") return item.gender === filter.value;
+    if (filter.name === "색상") return item.color === filter.value;
+    if (filter.name === "사이즈") return item.size === filter.value;
+    if (filter.name === "종류") return item.type === filter.value;
+    if (filter.name === "가격대") {
+      const price = item.price / 10000;
+      if (filter.value === "0~30") return price >= 0 && price <= 30;
+      if (filter.value === "31~60") return price >= 31 && price <= 60;
+      if (filter.value === "60~90") return price >= 60 && price <= 90;
+    }
+    return true;
+  }).sort((a, b) => {
+    if (selectedSort === "평점 높은순") return b.rating - a.rating;
+    if (selectedSort === "리뷰 많은순") return b.reviewCount - a.reviewCount;
+    return a.id - b.id;
+  });
 
   return (
     <MainContainer>
-      <FilterBar />
-      <SortRow><SortButton /></SortRow>
+      <FilterBar onFilterChange={handleFilterChange} />
+      <SortRow><SortButton selectedSort={selectedSort} onSelect={setSelectedSort} /></SortRow>
       <ProductRow>
-        {products.map((item, index) => (
-          <ProductCard key={`first-${index}`} {...item} />
-        ))}
+        {sortedProducts.slice(0, 5).map((item) => <ProductCard key={item.id} {...item} />)}
       </ProductRow>
       <ProductRow>
-        {products.map((item, index) => (
-          <ProductCard key={`second-${index}`} {...item} />
-        ))}
+        {sortedProducts.slice(5, 10).map((item) => <ProductCard key={item.id} {...item} />)}
       </ProductRow>
     </MainContainer>
   );

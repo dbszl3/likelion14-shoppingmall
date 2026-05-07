@@ -39,7 +39,7 @@ const filterOptions = {
   },
 };
 
-export default function FilterBar() {
+export default function FilterBar({ onFilterChange }) {
   const [selectedFilter, setSelectedFilter] = useState(null);
 
   return (
@@ -53,12 +53,7 @@ export default function FilterBar() {
       </FilterContainer>
 
       {selectedFilter && (
-        <FilterModal
-          title={selectedFilter}
-          rows={filterOptions[selectedFilter].rows}
-          width={filterOptions[selectedFilter].width}
-          onClose={() => setSelectedFilter(null)}
-        />
+        <FilterModal title={selectedFilter} rows={filterOptions[selectedFilter].rows} width={filterOptions[selectedFilter].width} onSelect={(value) => { onFilterChange(selectedFilter, value); setSelectedFilter(null); }} onClose={() => setSelectedFilter(null)} />
       )}
     </>
   );

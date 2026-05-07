@@ -81,7 +81,7 @@ const OptionButton = styled.button`
   cursor: pointer;
 `;
 
-export default function FilterModal({ title, rows, width, onClose }) {
+export default function FilterModal({ title, rows, width, onSelect, onClose }) {
   return (
     <Overlay>
       <ModalBox $width={width}>
@@ -96,7 +96,7 @@ export default function FilterModal({ title, rows, width, onClose }) {
           {rows.map((row, rowIndex) => (
             <OptionRow key={rowIndex}>
               {row.map((option) => (
-                <OptionButton key={option}>{option}</OptionButton>
+                <OptionButton key={option} onClick={() => onSelect(option)}>{option}</OptionButton>
               ))}
             </OptionRow>
           ))}
