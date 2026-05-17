@@ -1,13 +1,8 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import upload from "../../assets/icons/upload.png";
-import productDummy from "../Main/productDummy";
-
-const displayProducts = [...productDummy, ...productDummy].map((item, index) => ({
-    ...item,
-    id: index + 1,
-}));
+import { getItem, updateItem } from "../../api/shop";
 
 const Container = styled.div`
     display: flex;
@@ -173,25 +168,75 @@ const Add = styled.div`
 `;
 
 export default function ProductEdit() {
+    const navigate = useNavigate();
     const { id } = useParams();
-    const product = displayProducts.find((item) => item.id === Number(id));
-    const [previewImage, setPreviewImage] = useState(product?.imageUrl || "");
-    const [name, setName] = useState(product?.name || "");
-    const [rating, setRating] = useState(product?.rating || product?.rate || "");
-    const [reviewCount, setReviewCount] = useState(
-        (product?.reviewCount || product?.review || "").toLocaleString()
-    );
-    const [price, setPrice] = useState(
-        (product?.price || "").toLocaleString()
-    );
-    const [size, setSize] = useState(product?.size || "");
-    const [selectedType, setSelectedType] = useState(product?.type || "");
-    const [selectedGender, setSelectedGender] = useState(product?.gender || "");
-    const [selectedColor, setSelectedColor] = useState(product?.color || "");
+
+    const [productCategory, setProductCategory] = useState("");
+    const [previewImage, setPreviewImage] = useState("");
+    const [name, setName] = useState("");
+    const [rating, setRating] = useState("");
+    const [reviewCount, setReviewCount] = useState("");
+    const [price, setPrice] = useState("");
+    const [size, setSize] = useState("");
+    const [selectedType, setSelectedType] = useState("");
+    const [selectedGender, setSelectedGender] = useState("");
+    const [selectedColor, setSelectedColor] = useState("");
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            const product = await getItem(id);
+
+            if (!product) {
+                alert("상품 정보를 찾을 수 없습니다.");
+                navigate("/");
+                return;
+            }
+
+            setProductCategory(product.category);
+            setPreviewImage(product.imageUrl || "");
+            setName(product.name || "");
+            setRating(product.rating || product.rate || "");
+            setReviewCount(String(product.reviews ?? ""));
+            setPrice(String(product.price || ""));
+            setSize(product.size || "");
+            setSelectedType(product.type || "");
+            setSelectedGender(product.gender || "");
+            setSelectedColor(product.color || "");
+        };
+
+        fetchProduct();
+    }, [id, navigate]);
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
+
+        if (!file) return;
+
         setPreviewImage(URL.createObjectURL(file));
+    };
+
+    const handleSubmit = async () => {
+        const nextCategory = selectedType === "신발" ? "shoes" : "clothes";
+
+        const updatedProduct = {
+            imageUrl: previewImage,
+            name,
+            price: Number(price.replace(/[^0-9]/g, "")),
+            reviews: Number(reviewCount.replace(/[^0-9]/g, "")),
+            rating: Number(rating),
+            size,
+            type: selectedType,
+            gender: selectedGender,
+            color: selectedColor,
+        };
+
+        try {
+            await updateItem(productCategory || nextCategory, id, updatedProduct);
+            navigate(`/product/${id}`);
+        } catch (error) {
+            console.error("상품 수정 실패:", error);
+            alert("상품 수정에 실패했습니다. 입력값과 서버 실행 상태를 확인해주세요.");
+        }
     };
 
     return (
@@ -277,7 +322,7 @@ export default function ProductEdit() {
                                 ))}
                             </OptionGroup>
                         </Detail>
-                        <SubmitButton>상품 수정 완료</SubmitButton>
+                        <SubmitButton type="button" onClick={handleSubmit}>상품 수정 완료</SubmitButton>
                     </Content>
                 </Add>
             </AddContainer>

@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import upload from "../../assets/icons/upload.png";
+import { createItem } from "../../api/shop";
 
 const Container = styled.div`
     display: flex;
@@ -160,6 +162,13 @@ const SubmitButton = styled.button`
 `;
 
 export default function ProductAdd() {
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [rating, setRating] = useState("");
+  const [reviewCount, setReviewCount] = useState("");
+  const [price, setPrice] = useState("");
+  const [size, setSize] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -168,7 +177,34 @@ export default function ProductAdd() {
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
+
+    if (!file) return;
+
     setPreviewImage(URL.createObjectURL(file));
+  };
+
+  const handleSubmit = async () => {
+    const category = selectedType === "신발" ? "shoes" : "clothes";
+
+    const newProduct = {
+      imageUrl: previewImage || "",
+      name,
+      price: Number(price.replace(/[^0-9]/g, "")),
+      reviews: Number(reviewCount.replace(/[^0-9]/g, "")),
+      rating: Number(rating),
+      size,
+      type: selectedType,
+      gender: selectedGender,
+      color: selectedColor,
+    };
+
+    try {
+      await createItem(category, newProduct);
+      navigate("/");
+    } catch (error) {
+      console.error("상품 등록 실패:", error);
+      alert("상품 등록에 실패했습니다. 입력값과 서버 실행 상태를 확인해주세요.");
+    }
   };
 
   return (
@@ -189,23 +225,23 @@ export default function ProductAdd() {
                 <Content>
                     <Detail>
                         <DetailTitle>상품명</DetailTitle>
-                        <Input type="text" placeholder=""></Input>
+                        <Input type="text" value={name} onChange={(e) => setName(e.target.value)} />
                     </Detail>
                     <Detail>
                         <DetailTitle>평점</DetailTitle>
-                        <Input type="text" placeholder=""></Input>
+                        <Input type="text" value={rating} onChange={(e) => setRating(e.target.value)} />
                     </Detail>
                     <Detail>
                         <DetailTitle>리뷰수</DetailTitle>
-                        <Input type="text" placeholder=""></Input>
+                        <Input type="text" value={reviewCount} onChange={(e) => setReviewCount(e.target.value)} />
                     </Detail>
                     <Detail>    
                         <DetailTitle>가격</DetailTitle>
-                        <Input type="text" placeholder=""></Input>
+                        <Input type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
                     </Detail>   
                     <Detail>
                         <DetailTitle>사이즈</DetailTitle>
-                        <Input type="text" placeholder=""></Input>
+                        <Input type="text" value={size} onChange={(e) => setSize(e.target.value)} />
                     </Detail>
                     <Detail>
                         <DetailTitle>종류</DetailTitle>
@@ -253,7 +289,7 @@ export default function ProductAdd() {
                             ))}
                         </OptionGroup>
                     </Detail>
-                    <SubmitButton>상품 등록 완료</SubmitButton>
+                    <SubmitButton type="button" onClick={handleSubmit}>상품 등록 완료</SubmitButton>
                 </Content>
             </Add>
         </AddContainer>

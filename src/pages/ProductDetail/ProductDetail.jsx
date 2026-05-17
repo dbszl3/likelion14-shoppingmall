@@ -1,12 +1,9 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import productDummy from "../Main/productDummy";
 import star from "../../assets/icons/Star.png";
+import { getItem } from "../../api/shop";
 
-const displayProducts = [...productDummy, ...productDummy].map((item, index) => ({
-  ...item,
-  id: index + 1,
-}));
 
 const DetailContainer = styled.div`
   display: flex;
@@ -18,6 +15,7 @@ const ProductImage = styled.img`
   aspect-ratio: 61/80;
   margin-left: 204px;
   margin-top: 70px;
+  object-fit: contain;
 `;
 
 const Line = styled.div`
@@ -105,19 +103,31 @@ const Review = styled.p`
 
 export default function ProductDetail() {
   const { id } = useParams();
-  const productId = Number(id);
-  const product = displayProducts.find((item) => item.id === productId);
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const data = await getItem(id);
+      setProduct(data);
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (!product) {
+    return <div>상품 정보를 불러오는 중입니다.</div>;
+  }
 
   return (
     <DetailContainer>
       
-        <ProductImage src={product.imageUrl} alt={product.name} />
+        <ProductImage src={product.image} alt={product.name} />
         
         <Line />
 
         <InfoSection>
           <InfoBox>
-            <Price>{product.price.toLocaleString()}원</Price>
+            <Price>{Number(product.price).toLocaleString()}원</Price>
 
             <div>
               <ProductName>{product.name}</ProductName>
@@ -127,7 +137,7 @@ export default function ProductDetail() {
                   <Star src={star} />
                   <Rate>{product.rating}</Rate>
                 </Rating>
-                <Review>리뷰 {product.reviewCount.toLocaleString()}</Review>
+                <Review>리뷰 {Number(product.reviews).toLocaleString()}</Review>
               </ReviewRow>
             </div>
           </InfoBox>

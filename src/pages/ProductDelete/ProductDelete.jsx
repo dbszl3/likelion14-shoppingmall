@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useNavigate, useParams } from "react-router-dom";
 import ProductDetail from "../ProductDetail/ProductDetail";
+import { deleteItem, getItem } from "../../api/shop";
 
 const Overlay = styled.div`
   position: fixed;
@@ -63,6 +64,23 @@ export default function ProductDelete() {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const handleDelete = async () => {
+    try {
+      const product = await getItem(id);
+
+      if (!product) {
+        alert("삭제할 상품을 찾을 수 없습니다.");
+        return;
+      }
+
+      await deleteItem(product.category, id);
+      navigate("/");
+    } catch (error) {
+      console.error("상품 삭제 실패:", error);
+      alert("상품 삭제에 실패했습니다.");
+    }
+  };
+
   return (
     <>
       <ProductDetail />
@@ -70,7 +88,7 @@ export default function ProductDelete() {
         <ModalBox>
           <ModalText>상품을 삭제하시겠습니까?</ModalText>
           <ButtonBox>
-            <Button onClick={() => navigate("/")}>확인</Button>
+            <Button onClick={handleDelete}>확인</Button>
             <Button $cancel onClick={() => navigate(`/product/${id}`)}>취소</Button>
           </ButtonBox>
         </ModalBox>
