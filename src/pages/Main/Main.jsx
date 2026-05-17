@@ -25,6 +25,26 @@ const ProductRow = styled.div`
   margin-left: 158px;
 `;
 
+const mixProducts = (clothesItems, shoesItems) => {
+  const mixedItems = [];
+  const maxLength = Math.max(clothesItems.length, shoesItems.length);
+
+  for (let i = 0; i < maxLength; i += 4) {
+    mixedItems.push(...clothesItems.slice(i, i + 4));
+
+    const shoeIndex = Math.floor(i / 4);
+    if (shoesItems[shoeIndex]) {
+      mixedItems.push(shoesItems[shoeIndex]);
+    }
+  }
+
+  if (shoesItems.length > Math.ceil(clothesItems.length / 4)) {
+    mixedItems.push(...shoesItems.slice(Math.ceil(clothesItems.length / 4)));
+  }
+
+  return mixedItems;
+};
+
 export default function Main() {
   const location = useLocation();
 
@@ -122,12 +142,7 @@ export default function Main() {
           const clothesItems = Array.isArray(clothes) ? clothes : [];
           const shoesItems = Array.isArray(shoes) ? shoes : [];
 
-          const mixedItems = [
-            ...clothesItems.slice(0, 4),
-            ...shoesItems.slice(0, 1),
-            ...clothesItems.slice(4, 8),
-            ...shoesItems.slice(1, 2),
-          ];
+          const mixedItems = mixProducts(clothesItems, shoesItems);
 
           setItems(applyClientSort(applyClientFilter(mixedItems)));
         }
@@ -162,34 +177,22 @@ export default function Main() {
     <MainContainer>
       <FilterBar onFilterChange={handleFilterChange} />
       <SortRow><SortButton selectedSort={selectedSort} onSelect={setSelectedSort} /></SortRow>
-      <ProductRow>
-        {sortedProducts.slice(0, 5).map((item) => (
-          <ProductCard
-            key={item.id}
-            id={item.id}
-            imageUrl={item.imageUrl}
-            image={item.image}
-            name={item.name}
-            price={item.price}
-            reviewCount={item.reviewCount}
-            reviews={item.reviews}
-          />
-        ))}
-      </ProductRow>
-      <ProductRow>
-        {sortedProducts.slice(5, 10).map((item) => (
-          <ProductCard
-            key={item.id}
-            id={item.id}
-            imageUrl={item.imageUrl}
-            image={item.image}
-            name={item.name}
-            price={item.price}
-            reviewCount={item.reviewCount}
-            reviews={item.reviews}
-          />
-        ))}
-      </ProductRow>
+      {Array.from({ length: Math.ceil(sortedProducts.length / 5) }).map((_, rowIndex) => (
+        <ProductRow key={rowIndex}>
+          {sortedProducts.slice(rowIndex * 5, rowIndex * 5 + 5).map((item) => (
+            <ProductCard
+              key={`${item.type}-${item.id}`}
+              id={item.id}
+              imageUrl={item.imageUrl}
+              image={item.image}
+              name={item.name}
+              price={item.price}
+              reviewCount={item.reviewCount}
+              reviews={item.reviews}
+            />
+          ))}
+        </ProductRow>
+      ))}
     </MainContainer>
   );
 }
