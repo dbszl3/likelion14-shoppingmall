@@ -11,7 +11,11 @@ const FilterContainer = styled.div`
 
 const filterOptions = {
   성별: {
-    rows: [["남성", "여성", "남녀공용"]],
+    rows: [[
+      { label: "남성", value: "male" },
+      { label: "여성", value: "female" },
+      { label: "남녀공용", value: "unisex" },
+    ]],
     width: "296px",
   },
   색상: {
@@ -34,7 +38,10 @@ const filterOptions = {
     width: "296px",
   },
   종류: {
-    rows: [["의류", "신발"]],
+    rows: [[
+      { label: "의류", value: "clothes" },
+      { label: "신발", value: "shoes" },
+    ]],
     width: "296px",
   },
 };

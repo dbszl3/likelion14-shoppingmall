@@ -43,17 +43,19 @@ const ReviewCount = styled.p`
     line-height: normal;
 `;
 
-function ProductCard({ id, productId, imageUrl, name, price, reviewCount }) {
+function ProductCard({ id, productId, imageUrl, image, name, price, reviewCount, reviews }) {
 
     const navigate = useNavigate();
     const detailId = productId ?? id;
+    const productImage = imageUrl ?? image;
+    const productReviewCount = reviewCount ?? reviews ?? 0;
 
     return (
         <ProductContainer onClick={() => navigate(`/product/${detailId}`)}>
-            <ProductImage src={imageUrl} alt={name} />
+            <ProductImage src={productImage} alt={name} />
             <ProductName>{name}</ProductName>
             <ProductPrice>{price.toLocaleString()}원</ProductPrice>
-            <ReviewCount>리뷰 {reviewCount.toLocaleString()}</ReviewCount>
+            <ReviewCount>리뷰 {productReviewCount.toLocaleString()}</ReviewCount>
         </ProductContainer>
     )
 }

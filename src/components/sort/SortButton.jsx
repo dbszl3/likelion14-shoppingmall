@@ -40,11 +40,18 @@ export default function SortButton({ selectedSort, onSelect }) {
   return (
     <SortWrapper>
       <FilterContainer onClick={() => setIsOpen((prev) => !prev)}>
-        <Sort>정렬순</Sort><SortIcon src={sortIcon} />
+        <Sort>정렬순</Sort>
+        <SortIcon src={sortIcon} />
       </FilterContainer>
 
       {isOpen && (
-        <SortModal selectedSort={selectedSort} onSelect={(option) => { onSelect(option); setIsOpen(false); }} />
+        <SortModal
+          selectedSort={selectedSort}
+          onSelect={(option) => {
+            onSelect(option);
+            setIsOpen(false);
+          }}
+        />
       )}
     </SortWrapper>
   );
