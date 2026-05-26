@@ -56,9 +56,7 @@ export default function SortModal({ selectedSort, onSelect }) {
             onClick={() => onSelect(option)}
           >
             {option}
-            {selectedSort === option && (
-              <CheckIcon src={checkIcon} />
-            )}
+            {selectedSort === option && <CheckIcon src={checkIcon} />}
           </Option>
         ))}
       </OptionList>
